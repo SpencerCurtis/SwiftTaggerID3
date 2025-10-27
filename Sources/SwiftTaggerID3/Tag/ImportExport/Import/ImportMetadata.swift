@@ -106,10 +106,10 @@ extension Tag {
         for (key, value) in data {
             let valueString = value
                 .trimmingCharacters(in: .whitespacesAndNewlines)
-            
+
             let frameKey = FrameKey(rawString: key)
             let id = FrameIdentifier(frameKey: frameKey)
-            
+
             switch id.parseAs {
                 case .boolean, .integer, .string, .url:
                     importStringFrame(id: id, stringValue: valueString)

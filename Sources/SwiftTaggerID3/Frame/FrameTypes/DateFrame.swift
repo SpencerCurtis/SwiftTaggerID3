@@ -253,14 +253,17 @@ extension Tag {
             timeStamp = try? stringValue.timefromHHMMString()
         } else if id == .year ||
                     // versions 2.2 and 2.3 should only have a year for this frame
+                    // BUT: if stringValue looks like a full date (contains T or -), use full date parsing
                     (id == .originalReleaseDateTime &&
-                        (version == .v2_2 || version == .v2_3)) || stringValue.count == 4 {
+                        (version == .v2_2 || version == .v2_3) &&
+                        !stringValue.contains("T") && !stringValue.contains("-")) ||
+                    stringValue.count == 4 {
             timeStamp = try? stringValue.yearFromYYYYString()
         } else {
             let date = stringValue.attemptDateFromString()
             timeStamp = date
         }
-        
+
         set(dateFrame: id, timeStamp: timeStamp)
     }
     
