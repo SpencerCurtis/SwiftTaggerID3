@@ -1,0 +1,67 @@
+{TALB} ALBUM:                           Album
+{TSOA} ALBUM SORT:                      Album Sort
+{TPE2} ALBUM ARTIST:                    Album Artist
+{TSO2} ALBUM ARTIST SORT:               Album Artist Sort
+{TIT3} SUBTITLE:                        Subtitle
+{TIT2} TITLE:                           Title
+{TSOT} TITLE SORT:                      Title Sort
+{TPE1} ARTIST:                          Artist
+{TSOP} ARTIST SORT:                     Artist Sort
+{TCOM} COMPOSER:                        Composer
+{TSOC} COMPOSER SORT:                   Composer Sort
+{TCMP} COMPILATION:                     True
+{COMM} [ E N G]COMMENT:                 Comment Content
+{TGID} PODCAST ID:                      Podcast ID
+{TDRC} RECORDING DATE TIME:             2002-11-07T09:23:00Z
+{TDRL} RELEASE DATE TIME:               2002-11-07T09:23:00Z
+{TPOS} DISC NUMBER:                     4/5
+{TRCK} TRACK NUMBER:                    6/7
+{TIT1} CONTENT GROUP:                   Content Group
+{MVNM} MOVEMENT:                        Movement Name
+{MVIN} MOVEMENT NUMBER:                 5
+{MVCN} MOVEMENT COUNT:                  6
+{WFED} PODCAST FEED:                    http://podcast.url
+{TCAT} PODCAST CATEGORY:                Podcast Category
+{TCON} GENRE:                           Blues; Blues Refinement
+{GRP1} GROUPING:                        Grouping
+{TSRC} ISRC:                            987654321098
+{TKWD} PODCAST KEYWORDS:                Podcast; Keywords
+{TOPE} ORIGINAL ARTIST:                 Original Artist
+{TPUB} PUBLISHER:                       Publisher
+{WPUB} PUBLISHER WEBPAGE:               http://publisher.url
+{TOWN} FILE OWNER:                      File Owner
+{TCOP} COPYRIGHT:                       2020 Copyright
+{TDLY} PLAYLIST DELAY:                  0
+{TBPM} BPM:                             99
+{TMED} MEDIA TYPE:                      DIG; /A; Additional Information
+{TPE4} ARRANGER:                        Arranger
+{TPE3} CONDUCTOR:                       Conductor
+{TPRO} PRODUCED NOTICE:                 2020 Produced Notice
+{TMCL} MUSICIAN CREDITS LIST:           Alto = Alto Name // Soprano = Soprano Name
+{TIPL} INVOLVED PEOPLE LIST:            Director = Director Name // Producer = Producer Name
+{TENC} ENCODED BY:                      Encoded By
+{TSSE} ENCODING SETTINGS:               Encoding Settings
+{TFLT} FILE TYPE:                       MPG; /3; Additional Information
+{WOAS} AUDIO SOURCE WEBPAGE:            http://audiosource.url
+{WOAF} AUDIO FILE WEBPAGE:              http://audiofile.url
+{TXXX} USER TEXT:                       User Text Content
+{USLT} [ E N G]LYRICS:                  Lyrics Content
+{TEXT} LYRICIST:                        Lyricist
+{WOAR} ARTIST WEBPAGE:                  http://artist.url
+{TDEN} ENCODING DATE TIME:              2002-11-07T09:23:00Z
+{TKEY} INITIAL KEY:                     Abm
+{TLAN} LANGUAGES:                       eng
+{TMOO} MOOD:                            Mood
+{TOAL} ORIGINAL ALBUM:                  Original Album
+{TOFN} ORIGINAL FILENAME:               Original Filename
+{TOLY} ORIGINAL LYRICIST:               Original Lyricist
+{TDOR} ORIGINAL RELEASE DATE TIME:      2002-11-07T09:23:00Z
+{WPAY} PAYMENT WEBPAGE:                 http://payment.url
+{TDES} PODCAST DESCRIPTION:             Podcast Description
+{TRSN} RADIO STATION:                   Radio Station
+{WORS} RADIO STATION WEBPAGE:           http://radiostation.url
+{TRSO} RADIO STATION OWNER:             Radio Station Owner
+{WCOP} COPYRIGHT WEBPAGE:               http://copyright.url
+{TSST} SET SUBTITLE:                    Set Subtitle
+{TDTG} TAGGING DATE TIME:               2002-11-07T09:23:00Z
+{WXXX} USER URL:                        http://userdefined.url

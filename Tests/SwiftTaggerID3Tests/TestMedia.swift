@@ -46,6 +46,14 @@ public let sampleIcon = testMediaDirectory
     .appendingPathComponent("sampleicon-green")
     .appendingPathExtension("png")
 
+public let comprehensiveMetaUrl = testMediaDirectory
+    .appendingPathComponent("mp3-comprehensive-meta")
+    .appendingPathExtension("mp3")
+
+public let comprehensiveMetaTxtUrl = testMediaDirectory
+    .appendingPathComponent("mp3-comprehensive-meta")
+    .appendingPathExtension("txt")
+
 
 public let mp3V24: Mp3File = {
     do {
@@ -106,6 +114,15 @@ let mp3Unknown: Mp3File = {
     }
 }()
 
+public let mp3ComprehensiveMeta: Mp3File = {
+    do {
+        let mp3 = try Mp3File(location: comprehensiveMetaUrl)
+        return mp3
+    } catch {
+        fatalError("Mp3File failed to initialize for comprehensive metadata fixture")
+    }
+}()
+
 
 public let tagV24: Tag = {
     do {
@@ -163,6 +180,15 @@ public let tagUnknown: Tag = {
         return tag
     } catch {
         fatalError("Mp3File failed to initialize")
+    }
+}()
+
+public let tagComprehensiveMeta: Tag = {
+    do {
+        let tag = try mp3ComprehensiveMeta.tag()
+        return tag
+    } catch {
+        fatalError("Comprehensive metadata tag failed to initialize")
     }
 }()
 
