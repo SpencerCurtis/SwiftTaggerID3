@@ -45,13 +45,13 @@ extension Tag {
 
     private func getMetadataAsArray(format: MetadataExportFormat) -> [(keyString: String, valueString: String)] {
         var metadata = [(keyString: String, valueString: String)]()
-        
+
         let frames = self.frames
             .sorted(by: {$0.key.priority < $1.key.priority })
             .filter({$0.value.identifier != .attachedPicture})
             .filter({$0.value.identifier != .chapter})
             .filter({$0.value.identifier != .tableOfContents})
-           
+
         for (key, frame) in frames {
             let keyString = key.keyString(format: format)
             let valueString = frame.description
@@ -99,17 +99,17 @@ extension Tag {
     
     private func formatAsText() -> String {
         let metadata = getMetadataAsArray(format: .text)
-        
+
         var string = """
             """
-        
+
         var count = 0
         let sorted = metadata.map({$0.keyString}).sorted(by: {$0.count > $1.count})
-        
+
         if let first = sorted.first {
             count = first.count + 6
         }
-        
+
         for (key, value) in metadata {
             let valueString: String
             if key == "{TCMP} COMPILATION" || key == "{TCP} COMPILATION" {
@@ -121,8 +121,9 @@ extension Tag {
             } else {
                 valueString = value
             }
-            
-            let difference = count - key.count
+
+            // Ensure difference is never negative to avoid string index out of bounds
+            let difference = max(0, count - key.count)
             let separator = ":".padRight(difference)
             let joined = key + separator + valueString + "\n"
             string.append(joined)

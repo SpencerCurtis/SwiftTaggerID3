@@ -11,7 +11,20 @@ import Foundation
 import SwiftConvenienceExtensions
 
 extension String {
-    
+
+    /// Fixed version of convertCamelToUpperCase that doesn't crash
+    /// Overrides the buggy version from SwiftConvenienceExtensions
+    func convertCamelToUpperCase() -> String {
+        return self
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "([A-Z])",
+                                  with: " $1",
+                                  options: .regularExpression,
+                                  range: nil)  // FIX: Use nil instead of range(of: self)
+            .trimmingCharacters(in: .whitespaces)
+            .uppercased()
+    }
+
     init<S>(ascii: S) throws where S: Sequence, S.Element == UInt8 {
         let scalars = String.UnicodeScalarView(ascii.lazy.map({ Unicode.Scalar($0) }))
         self = String(scalars)
