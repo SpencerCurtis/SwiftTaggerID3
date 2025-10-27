@@ -506,24 +506,50 @@ extension FrameKey {
     private init(localized content: String, _ id: FrameIdentifier) {
         var language: ISO6392Code = .und
         var description: String = ""
-        
+
         if content.contains("[") {
             var components = content.components(separatedBy: "[")
-            
+
             if components.count >= 2 {
-                description = components.extractFirst()
+                // First component is description before [
+                let descBefore = components.extractFirst()
                     .trimmingCharacters(in: .whitespacesAndNewlines)
-                    .capitalized
-                
-                let languageRaw = components.extractFirst()
+
+                // Second component contains language and description: " E N G]COMMENT"
+                let languageAndDesc = components.extractFirst()
                     .trimmingCharacters(in: .whitespacesAndNewlines)
-                    .trimmingCharacters(in: CharacterSet(charactersIn: "]"))
-                    .lowercased()
-                language = ISO6392Code(rawValue: languageRaw) ?? .und
+
+                // Split by ] to separate language from description after it
+                let parts = languageAndDesc.components(separatedBy: "]")
+                if parts.count >= 2 {
+                    // Language code (with spaces): "E N G"
+                    let languageRaw = parts[0]
+                        .replacingOccurrences(of: " ", with: "")  // Remove spaces: "ENG"
+                        .lowercased()  // "eng"
+                    language = ISO6392Code(rawValue: languageRaw) ?? .und
+
+                    // Description after ]: "COMMENT"
+                    description = parts[1]
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                        .capitalized
+                } else {
+                    // Only language, no description after ]
+                    let languageRaw = parts[0]
+                        .replacingOccurrences(of: " ", with: "")
+                        .lowercased()
+                    language = ISO6392Code(rawValue: languageRaw) ?? .und
+                }
+
+                // Use descBefore if descAfter is empty
+                if description.isEmpty && !descBefore.isEmpty {
+                    description = descBefore.capitalized
+                }
             } else {
+                // Only one component after splitting by [
                 let languageRaw = components.extractFirst()
                     .trimmingCharacters(in: .whitespacesAndNewlines)
-                    .trimmingCharacters(in: CharacterSet(charactersIn: "]"))
+                    .components(separatedBy: "]")[0]
+                    .replacingOccurrences(of: " ", with: "")
                     .lowercased()
                 language = ISO6392Code(rawValue: languageRaw) ?? .und
             }
@@ -532,7 +558,7 @@ extension FrameKey {
                 .trimmingCharacters(in: .whitespacesAndNewlines)
                 .capitalized
         }
-        
+
         if id == .comments {
             self = .comments(language: language , description: description)
         } else {
@@ -544,10 +570,27 @@ extension FrameKey {
         let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
         var description = ""
 
-        if trimmed != "USER DEFINED TEXT" && trimmed != "USER DEFINED URL" {
-            description = trimmed.capitalized
+        // Always convert "USER TEXT" format back to camelCase, even for generic names
+        // This handles descriptions that were exported from camelCase
+        if !trimmed.isEmpty {
+            description = trimmed
+                .split(separator: " ")
+                .map { word in
+                    // Preserve common acronyms
+                    let upperWord = word.uppercased()
+                    if upperWord == "URL" || upperWord == "ID" || upperWord == "HTTP" || upperWord == "XML" || upperWord == "JSON" {
+                        return String(upperWord)
+                    }
+                    return word.capitalized
+                }
+                .joined()
         }
-        
+
+        // However, clear out truly generic/default names that shouldn't be preserved
+        if description == "UserDefinedText" || description == "UserDefinedUrl" {
+            description = ""
+        }
+
         if id == .userDefinedText {
             self = .userDefinedText(description)
         } else {

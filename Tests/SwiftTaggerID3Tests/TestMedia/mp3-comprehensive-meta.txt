@@ -25,8 +25,8 @@
 {TCON} GENRE:                           Blues; Blues Refinement
 {GRP1} GROUPING:                        Grouping
 {TSRC} ISRC:                            987654321098
-{TOPE} ORIGINAL ARTIST:                 Original Artist
 {TKWD} PODCAST KEYWORDS:                Podcast; Keywords
+{TOPE} ORIGINAL ARTIST:                 Original Artist
 {TPUB} PUBLISHER:                       Publisher
 {WPUB} PUBLISHER WEBPAGE:               http://publisher.url
 {TOWN} FILE OWNER:                      File Owner
@@ -38,8 +38,8 @@
 {TPE3} CONDUCTOR:                       Conductor
 {TPRO} PRODUCED NOTICE:                 2020 Produced Notice
 {TMCL} MUSICIAN CREDITS LIST:           Alto = Alto Name // Soprano = Soprano Name
-{TENC} ENCODED BY:                      Encoded By
 {TIPL} INVOLVED PEOPLE LIST:            Director = Director Name // Producer = Producer Name
+{TENC} ENCODED BY:                      Encoded By
 {TSSE} ENCODING SETTINGS:               Encoding Settings
 {TFLT} FILE TYPE:                       MPG; /3; Additional Information
 {WOAS} AUDIO SOURCE WEBPAGE:            http://audiosource.url
@@ -59,9 +59,9 @@
 {WPAY} PAYMENT WEBPAGE:                 http://payment.url
 {TDES} PODCAST DESCRIPTION:             Podcast Description
 {TRSN} RADIO STATION:                   Radio Station
-{TRSO} RADIO STATION OWNER:             Radio Station Owner
 {WORS} RADIO STATION WEBPAGE:           http://radiostation.url
-{TSST} SET SUBTITLE:                    Set Subtitle
+{TRSO} RADIO STATION OWNER:             Radio Station Owner
 {WCOP} COPYRIGHT WEBPAGE:               http://copyright.url
+{TSST} SET SUBTITLE:                    Set Subtitle
 {TDTG} TAGGING DATE TIME:               2002-11-07T09:23:00Z
 {WXXX} USER URL:                        http://userdefined.url
