@@ -25,6 +25,19 @@ extension String {
             .uppercased()
     }
 
+    /// Convert camelCase to "Camel Case" (capitalized with spaces)
+    /// Replaces the missing convertedCamelCase from SwiftConvenienceExtensions
+    func convertedCamelCase() -> String {
+        return self
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "([A-Z])",
+                                  with: " $1",
+                                  options: .regularExpression,
+                                  range: nil)
+            .trimmingCharacters(in: .whitespaces)
+            .capitalized
+    }
+
     init<S>(ascii: S) throws where S: Sequence, S.Element == UInt8 {
         let scalars = String.UnicodeScalarView(ascii.lazy.map({ Unicode.Scalar($0) }))
         self = String(scalars)
