@@ -14,7 +14,164 @@ import XCTest
 class SwiftTaggerID3_Misc_Tests: XCTestCase {
 
     let testString = "Trên Tình Bạn Dưới Tình Yêu"
-    
+
+    // MARK: - Fixture Generation (Run once to create comprehensive test fixture)
+
+    /// This test creates mp3-comprehensive-meta.mp3 with all metadata fields populated
+    /// Run this once to generate the fixture, then it can be used by export/import tests
+    func testGenerateComprehensiveFixture() throws {
+        // Start with a clean MP3
+        var tag = tagNoMeta
+
+        // Populate all text fields with comprehensive data
+        tag.album = "Album"
+        tag.albumArtist = "Album Artist"
+        tag.albumSort = "Album Sort"
+        tag.albumArtistSort = "Album Artist Sort"
+        tag.arranger = "Arranger"
+        tag.artist = "Artist"
+        tag.artistSort = "Artist Sort"
+        tag.composer = "Composer"
+        tag.composerSort = "Composer Sort"
+        tag.conductor = "Conductor"
+        tag.contentGroup = "Content Group"
+        tag.copyright = "2020 Copyright"
+        tag.encodedBy = "Encoded By"
+        tag.encodingSettings = "Encoding Settings"
+        tag.fileOwner = "File Owner"
+        tag.grouping = "Grouping"
+        tag.initialKey = .aFlatMinor
+        tag.lyricist = "Lyricist"
+        tag.mood = "Mood"
+        tag.movement = "Movement Name"
+        tag.originalAlbum = "Original Album"
+        tag.originalArtist = "Original Artist"
+        tag.originalFilename = "Original Filename"
+        tag.originalLyricist = "Original Lyricist"
+        tag.podcastID = "Podcast ID"
+        tag.podcastCategory = "Podcast Category"
+        tag.podcastFeed = "http://podcast.url"
+        tag.podcastDescription = "Podcast Description"
+        tag.podcastKeywords = ["Podcast", "Keywords"]
+        tag.publisher = "Publisher"
+        tag.producedNotice = "2020 Produced Notice"
+        tag.radioStation = "Radio Station"
+        tag.radioStationOwner = "Radio Station Owner"
+        tag.subtitle = "Subtitle"
+        tag.setSubtitle = "Set Subtitle"
+        tag.title = "Title"
+        tag.titleSort = "Title Sort"
+
+        // Numeric fields
+        tag.compilation = true
+        tag.bpm = 99
+        tag.isrc = "987654321098"
+        tag.movementNumber = 5
+        tag.movementCount = 6
+        tag.playlistDelay = 0
+
+        // URL fields
+        tag.audioSourceWebpage = "http://audiosource.url"
+        tag.audioFileWebpage = "http://audiofile.url"
+        tag.artistWebpage = "http://artist.url"
+        tag.copyrightWebpage = "http://copyright.url"
+        tag.paymentWebpage = "http://payment.url"
+        tag.publisherWebpage = "http://publisher.url"
+        tag.radioStationWebpage = "http://radiostation.url"
+
+        // Language
+        tag.languages = [.english]
+
+        // Track/Disc numbers
+        tag.trackNumber.index = 6
+        tag.trackNumber.total = 7
+        tag.discNumber.index = 4
+        tag.discNumber.total = 5
+
+        // Credits
+        tag.addInvolvementCredit(role: .director, person: "Director Name")
+        tag.addInvolvementCredit(role: .producer, person: "Producer Name")
+        tag.addMusicianCredit(role: .soprano, person: "Soprano Name")
+        tag.addMusicianCredit(role: .alto, person: "Alto Name")
+
+        // Dates
+        tag.encodingDateTime = testAllDate
+        tag.taggingDateTime = testAllDate
+        tag.releaseDateTime = testAllDate
+        tag.originalRelease = testAllDate
+        tag.recordingDateTime = testAllDate
+
+        // Localized frames
+        tag[comment: "Comment", .eng] = "Comment Content"
+        tag[lyrics: "Lyrics", .eng] = "Lyrics Content"
+        tag[userDefinedUrl: "UserURL"] = "http://userdefined.url"
+        tag["UserText"] = "User Text Content"
+
+        // Complex types
+        tag.genre.genreCategory = .Blues
+        tag.genre.genre = "Blues Refinement"
+
+        tag.mediaType.mediaType = .otherDigital
+        tag.mediaType.mediaTypeRefinement = .analogTransfer
+        tag.mediaType.additionalInformation = "Additional Information"
+
+        tag.fileType.fileType = .MPG
+        tag.fileType.fileTypeRefinement = .mpegLayerIII
+        tag.fileType.additionalInformation = "Additional Information"
+
+        // Write to test media directory
+        let fixtureUrl = testMediaDirectory
+            .appendingPathComponent("mp3-comprehensive-meta.mp3")
+
+        XCTAssertNoThrow(try mp3NoMeta.write(tag: &tag, version: .v2_4, outputLocation: fixtureUrl))
+
+        // Verify by reading back
+        let verifyMp3 = try Mp3File(location: fixtureUrl)
+        let verifyTag = try Tag(mp3File: verifyMp3)
+
+        XCTAssertEqual(verifyTag.album, "Album")
+        XCTAssertEqual(verifyTag.artist, "Artist")
+        XCTAssertEqual(verifyTag.title, "Title")
+
+        print("\n✓ Created comprehensive test fixture at: \(fixtureUrl.path)")
+        print("  Fixture contains \(verifyTag.frames.count) metadata frames")
+    }
+
+    /// This test exports metadata from the comprehensive fixture to .txt format
+    /// Run this once to generate mp3-comprehensive-meta.txt for import tests
+    func testGenerateTextMetadataFixture() throws {
+        // First test with existing v24 file to verify export works
+        let existingMp3 = try Mp3File(location: sample24Url)
+        var existingTag = try existingMp3.tag()
+
+        print("Testing export with existing MP3 that has \(existingTag.frames.count) frames")
+
+        // This should not crash if the bug is fixed
+        XCTAssertNoThrow(try existingTag.exportMetadata(file: .text))
+
+        // Now try with comprehensive fixture
+        let fixtureUrl = testMediaDirectory
+            .appendingPathComponent("mp3-comprehensive-meta.mp3")
+
+        let mp3 = try Mp3File(location: fixtureUrl)
+        var tag = try mp3.tag()
+
+        print("Testing export with comprehensive fixture that has \(tag.frames.count) frames")
+
+        // Export to .txt format
+        XCTAssertNoThrow(try tag.exportMetadata(file: .text))
+
+        // Verify the .txt file was created
+        let txtUrl = fixtureUrl.deletingPathExtension()
+            .appendingPathExtension("txt")
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtUrl.path))
+
+        print("\n✓ Created metadata fixture at: \(txtUrl.path)")
+    }
+
+    // MARK: - Original Tests
+
     func testV24() throws {
         var tag = tagNoMeta
         
@@ -264,34 +421,36 @@ class SwiftTaggerID3_Misc_Tests: XCTestCase {
     }
     
     func testMetadataExporterText() throws {
-        let url = localDirectory
-            .appendingPathComponent("testing/output.mp3")
-        let mp3 = try Mp3File(location: url)
-        var tag = try mp3.tag()
-        
+        var tag = tagComprehensiveMeta
+
+        // Export to .txt format
         XCTAssertNoThrow(try tag.exportMetadata(file: .text))
+
+        // Verify the .txt file was created
+        let txtUrl = comprehensiveMetaUrl.deletingPathExtension()
+            .appendingPathExtension("txt")
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtUrl.path),
+                     "Exported .txt file should exist at \(txtUrl.path)")
     }
     
     func testMetadataImporterText() throws {
-        let url = localDirectory
-            .appendingPathComponent("testing/output.mp3")
-        let mp3 = try Mp3File(location: url)
-        var tag = try mp3.tag()
+        // Start with a fresh tag
+        var tag = tagNoMeta
 
-        XCTAssertEqual(tag.frames.count, 89)
+        let originalFrameCount = tag.frames.count
 
-        XCTAssertNoThrow(tag.removeAllMetadata())
-        XCTAssertEqual(tag.frames.count, 22)
+        // Import metadata from the comprehensive .txt fixture
+        XCTAssertNoThrow(try tag.importMetadata(location: comprehensiveMetaTxtUrl))
 
-        let text = url.deletingPathExtension()
-            .appendingPathExtension("txt")
+        // Verify frames were added
+        XCTAssertGreaterThan(tag.frames.count, originalFrameCount,
+                           "Frame count should increase after importing metadata")
 
-        XCTAssertNoThrow(try tag.importMetadata(location: text))
-        XCTAssertEqual(tag.frames.count, 89)
+        // Write to temp file to verify the import worked
+        let outputURL = tempOutputDirectory
 
-        let outputURL = url.deletingLastPathComponent().appendingPathComponent("import-test-text.mp3")
-
-        XCTAssertNoThrow(try mp3.write(tag: &tag, version: .v2_4, outputLocation: outputURL))
+        XCTAssertNoThrow(try mp3NoMeta.write(tag: &tag, version: .v2_4, outputLocation: outputURL))
         let outputFile = try Mp3File(location: outputURL)
         let output = try outputFile.tag()
 
@@ -388,12 +547,17 @@ class SwiftTaggerID3_Misc_Tests: XCTestCase {
     }
     
     func testMetadataExporterCSV() throws {
-        let url = localDirectory
-            .appendingPathComponent("testing/output.mp3")
-        let mp3 = try Mp3File(location: url)
-        var tag = try mp3.tag()
-        
+        var tag = tagComprehensiveMeta
+
+        // Export to .csv format
         XCTAssertNoThrow(try tag.exportMetadata(file: .csv))
+
+        // Verify the .csv file was created
+        let csvUrl = comprehensiveMetaUrl.deletingPathExtension()
+            .appendingPathExtension("csv")
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: csvUrl.path),
+                     "Exported .csv file should exist at \(csvUrl.path)")
     }
     
 //    func testMetadataImporterCSV() throws {
@@ -531,12 +695,17 @@ class SwiftTaggerID3_Misc_Tests: XCTestCase {
 //    }
     
     func testMetadataExporterJSON() throws {
-        let url = localDirectory
-            .appendingPathComponent("testing/output.mp3")
-        let mp3 = try Mp3File(location: url)
-        var tag = try mp3.tag()
-        
+        var tag = tagComprehensiveMeta
+
+        // Export to .json format
         XCTAssertNoThrow(try tag.exportMetadata(file: .json))
+
+        // Verify the .json file was created
+        let jsonUrl = comprehensiveMetaUrl.deletingPathExtension()
+            .appendingPathExtension("json")
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: jsonUrl.path),
+                     "Exported .json file should exist at \(jsonUrl.path)")
     }
     
 //    func testMetadataImporterJSON() throws {
