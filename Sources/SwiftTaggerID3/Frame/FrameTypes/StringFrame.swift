@@ -361,14 +361,35 @@ extension Tag {
         }
     }
 
-    /// Grouping getter-setter. This is a non-standard, iTunes compliant frame.
-    /// ID3 Identifier: `GRP1`
+    /// Grouping getter-setter. Reads from TIT1 (standard) or GRP1 (iTunes), writes to BOTH for compatibility.
+    ///
+    /// ID3 Standard: TIT1 (Content Group Description) - ID3v2.4 official frame
+    /// iTunes: GRP1 (non-standard) - used by iTunes 12.5+ (Dec 2016 onwards)
+    ///
+    /// Reading priority:
+    /// 1. TIT1 (standard) - handles ffmpeg, old iTunes, most tools
+    /// 2. GRP1 (iTunes) - handles modern iTunes/Music.app
+    ///
+    /// Writing strategy: Write to BOTH frames for maximum compatibility
+    /// - TIT1: for standard tools, ffmpeg, old iTunes, older iPods
+    /// - GRP1: for modern iTunes/Music.app, newer iPods when synced via Finder
     public var grouping: String? {
-        get { get(.grouping) }
+        get {
+            // Try standard TIT1 first (ffmpeg, most tools, old iTunes < 12.5)
+            if let tit1Value = get(.contentGroup) {
+                return tit1Value
+            }
+            // Fall back to iTunes GRP1 (iTunes 12.5+, modern Music.app)
+            return get(.grouping)
+        }
         set {
+            // Write to BOTH frames for maximum compatibility
             if let new = newValue {
-                set(.grouping, stringValue: new)
+                set(.contentGroup, stringValue: new)  // TIT1 (standard ID3v2.4)
+                set(.grouping, stringValue: new)       // GRP1 (iTunes compatibility)
             } else {
+                // Clear both frames
+                set(.contentGroup, stringValue: nil)
                 set(.grouping, stringValue: nil)
             }
         }
