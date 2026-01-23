@@ -687,13 +687,101 @@ class SwiftTaggerID3_Write_Tests: XCTestCase {
         var tag = tagV24
         tag.removeAllMetadata()
         XCTAssertTrue(tag.frames.isEmpty)
-        
+
         let outputUrl = tempOutputDirectory
         // let outputUrl = try localOutputDirectory("tagRemovalTest")
         try mp3V24.write(tag: &tag, version: .v2_4, outputLocation: outputUrl)
-        
+
         let outputMp3 = try Mp3File(location: outputUrl)
         let output = try Tag(mp3File: outputMp3)
         XCTAssertTrue(output.frames.isEmpty)
+    }
+
+    // MARK: - Popularimeter (POPM) Tests
+
+    func testPopularimeterStarRating() throws {
+        var tag = Tag(version: .v2_4)
+
+        // Test setting star rating (0-5 scale)
+        tag.starRating = 4
+
+        let outputUrl = tempOutputDirectory
+        XCTAssertNoThrow(try mp3NoMeta.write(tag: &tag, version: .v2_4, outputLocation: outputUrl))
+
+        let outputMp3 = try Mp3File(location: outputUrl)
+        let output = try Tag(mp3File: outputMp3)
+
+        XCTAssertEqual(output.starRating, 4)
+        XCTAssertEqual(output.rating, 196)  // 4 stars = byte value 196 (WMP standard)
+    }
+
+    func testPopularimeterAllStarValues() throws {
+        // Test all star rating values round-trip correctly
+        for stars in 0...5 {
+            var tag = Tag(version: .v2_4)
+            tag.starRating = stars
+
+            let outputUrl = tempOutputDirectory
+            try mp3NoMeta.write(tag: &tag, version: .v2_4, outputLocation: outputUrl)
+
+            let outputMp3 = try Mp3File(location: outputUrl)
+            let output = try Tag(mp3File: outputMp3)
+
+            XCTAssertEqual(output.starRating, stars, "Star rating \(stars) did not round-trip correctly")
+        }
+    }
+
+    func testPopularimeterWithPlayCount() throws {
+        var tag = Tag(version: .v2_4)
+        tag.starRating = 5
+        tag.playCount = 42
+
+        let outputUrl = tempOutputDirectory
+        XCTAssertNoThrow(try mp3NoMeta.write(tag: &tag, version: .v2_4, outputLocation: outputUrl))
+
+        let outputMp3 = try Mp3File(location: outputUrl)
+        let output = try Tag(mp3File: outputMp3)
+
+        XCTAssertEqual(output.starRating, 5)
+        XCTAssertEqual(output.playCount, 42)
+    }
+
+    func testPopularimeterWithEmail() throws {
+        var tag = Tag(version: .v2_4)
+        tag.starRating = 3
+        tag.ratingEmail = "user@example.com"
+
+        let outputUrl = tempOutputDirectory
+        XCTAssertNoThrow(try mp3NoMeta.write(tag: &tag, version: .v2_4, outputLocation: outputUrl))
+
+        let outputMp3 = try Mp3File(location: outputUrl)
+        let output = try Tag(mp3File: outputMp3)
+
+        XCTAssertEqual(output.starRating, 3)
+        XCTAssertEqual(output.ratingEmail, "user@example.com")
+    }
+
+    func testPopularimeterRemoval() throws {
+        // First write a rating
+        var tag = Tag(version: .v2_4)
+        tag.starRating = 5
+
+        let outputUrl = tempOutputDirectory
+        try mp3NoMeta.write(tag: &tag, version: .v2_4, outputLocation: outputUrl)
+
+        // Verify it was written
+        var outputMp3 = try Mp3File(location: outputUrl)
+        var output = try Tag(mp3File: outputMp3)
+        XCTAssertEqual(output.starRating, 5)
+
+        // Now remove it
+        output.rating = nil
+
+        try outputMp3.write(tag: &output, version: .v2_4, outputLocation: outputUrl)
+
+        outputMp3 = try Mp3File(location: outputUrl)
+        output = try Tag(mp3File: outputMp3)
+        XCTAssertNil(output.starRating)
+        XCTAssertNil(output.rating)
     }
 }

@@ -458,6 +458,11 @@ extension Version {
                     case .v2_3: return "TYER"
                     case .v2_4: return nil
                 }
+            case .popularimeter:
+                switch self {
+                    case .v2_2: return "POP"
+                    case .v2_3, .v2_4: return "POPM"
+                }
             case .passThrough: return nil
         }
     }
