@@ -14,4 +14,5 @@ enum Mp3FileError: Error {
     case UnableToDetermineID3Version
     case InvalidStringEncodingByte
     case UnableToDetermineUniqueFrameID(String)
+    case InvalidFrameData
 }
