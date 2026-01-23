@@ -86,6 +86,7 @@ enum FrameIdentifier: String, CaseIterable {
     case userDefinedText
     case userDefinedWebpage
     case year
+    case popularimeter
     case passThrough
     
     init(idString: String) {
@@ -149,6 +150,14 @@ enum FrameIdentifier: String, CaseIterable {
         switch self {
             case .userDefinedText: return .userDefinedText(description)
             case .userDefinedWebpage: return .userDefinedWebpage(description)
+            default: fatalError("Wrong frame key for identifier \(self.rawValue)")
+        }
+    }
+
+    func frameKey(email: String?) -> FrameKey {
+        let email = email ?? ""
+        switch self {
+            case .popularimeter: return .popularimeter(email: email)
             default: fatalError("Wrong frame key for identifier \(self.rawValue)")
         }
     }
@@ -223,6 +232,7 @@ enum FrameIdentifier: String, CaseIterable {
             case .titleSort: return .titleSort
             case .trackNumber: return .trackNumber
             case .year: return .year
+            case .popularimeter: return .popularimeter(email: "")
             default: fatalError("Wrong frame key for identifier \(self.rawValue)")
         }
     }
@@ -304,6 +314,7 @@ enum FrameIdentifier: String, CaseIterable {
             case .userDefinedWebpage(_): self = .userDefinedWebpage
             case .passThrough(idString: _, uuid: _): self = .passThrough
             case .year: self = .year
+            case .popularimeter(email: _): self = .popularimeter
         }
     }
     
@@ -331,6 +342,8 @@ enum FrameIdentifier: String, CaseIterable {
                 return .complex
             case .bpm, .length, .movementCount, .movementNumber, .playlistDelay:
                 return .integer
+            case .popularimeter:
+                return .popularimeter
             case .artistWebpage, .audioFileWebpage, .audioSourceWebpage, .copyrightWebpage, .paymentWebpage, .publisherWebpage, .radioStationWebpage:
                 return .url
             case .date, .encodingDateTime, .originalReleaseDateTime, .recordingDateTime, .releaseDateTime, .taggingDateTime, .time, .year:
@@ -408,6 +421,12 @@ enum FrameIdentifier: String, CaseIterable {
                                         flags: flags,
                                         payload: payload,
                                         idString: idString)
+            case .popularimeter:
+                return try PopularimeterFrame(identifier: self,
+                                              version: version,
+                                              size: size,
+                                              flags: flags,
+                                              payload: payload)
         }
     }
     
@@ -440,5 +459,6 @@ enum FrameParser {
     case tableOfContents
     case image
     case passThrough
+    case popularimeter
 }
 

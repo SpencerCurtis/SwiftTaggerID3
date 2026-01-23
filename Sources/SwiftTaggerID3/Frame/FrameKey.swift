@@ -331,6 +331,11 @@ public enum FrameKey: Hashable {
     ///
     /// (versions 2.2 and 2.3 only) A numeric string with a year of the recording. This frames is always four characters long (until the year 10000). FOR VERSION 2.4: This frame is replaced by the TDRC frame, 'Recording time'
     case year
+    /// `Popularimeter` frame
+    ///
+    /// Contains a rating (0-255) and optional play count. The email field identifies the rater.
+    /// Common rating values: 1=★, 64=★★, 128=★★★, 196=★★★★, 255=★★★★★
+    case popularimeter(email: String = "")
     /// any frame not handled by SwiftTagger
     case passThrough(idString: String, uuid: UUID = UUID())
 }
@@ -471,6 +476,12 @@ extension FrameKey {
                     return "userDefinedURL"
                 }
             case .year: return "year"
+            case .popularimeter(email: let email):
+                if email.isEmpty {
+                    return "popularimeter"
+                } else {
+                    return "popularimeter[\(email)]"
+                }
             case .passThrough(idString: let idString, uuid: _): return idString
             default: return ""
         }
@@ -675,6 +686,7 @@ extension FrameKey {
             case .time: return 52
             case .userDefinedWebpage(_): return 69
             case .passThrough(idString: _, uuid: _): return 70
+            case .popularimeter(email: _): return 73
         }
-    }    
+    }
 }
