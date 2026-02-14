@@ -125,19 +125,20 @@ extension Array where Element == String {
     
     func encodeNonParentheticalGenreStrings(_ encoding: String.Encoding) -> Data {
         var data = Data()
-        // convert the raw value to the numerical code, if necessary
+        // Write genre names as human-readable strings, not numeric codes.
+        // The ID3v2.4 spec allows numeric strings but many readers (AVFoundation,
+        // media players) don't resolve them back to genre names.
+        // Special tokens RX (Remix) and CR (Cover) are preserved per spec.
         for item in self {
             if item != "" {
                 if let genreType = GenreType(rawValue: item) {
-                    var itemCode: String = ""
                     if genreType == .Remix {
-                        itemCode = "RX"
+                        data.append("RX".attemptTerminatedStringEncoding(encoding))
                     } else if genreType == .Cover {
-                        itemCode = "CR"
+                        data.append("CR".attemptTerminatedStringEncoding(encoding))
                     } else {
-                        itemCode = String(genreType.code)
+                        data.append(item.attemptTerminatedStringEncoding(encoding))
                     }
-                    data.append(itemCode.attemptTerminatedStringEncoding(encoding))
                 } else {
                     data.append(item.attemptTerminatedStringEncoding(encoding))
                 }
