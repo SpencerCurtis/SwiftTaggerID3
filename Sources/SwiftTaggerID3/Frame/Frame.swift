@@ -18,7 +18,8 @@ import Foundation
  */
 public class Frame: CustomStringConvertible {
     public var description: String {
-        fatalError("Override from metadata atom \(identifier.rawValue)")
+        assertionFailure("Override description in subclass for \(identifier.rawValue)")
+        return "Frame(\(identifier.rawValue))"
     }
 
     var identifier: FrameIdentifier
@@ -39,13 +40,15 @@ public class Frame: CustomStringConvertible {
     var frameKey: FrameKey {
         switch self.identifier {
             case .attachedPicture, .chapter, .comments, .unsynchronizedLyrics, .userDefinedText, .userDefinedWebpage, .passThrough:
-                fatalError("Override frameKey in subclass \(type(of: self))")
+                assertionFailure("Override frameKey in subclass \(type(of: self))")
+                return .passThrough(idString: identifier.rawValue, uuid: UUID())
             default: return self.identifier.frameKey
         }
     }
     
     var contentData: Data {
-        fatalError("Override contentData in subclass \(type(of: self))")
+        assertionFailure("Override contentData in subclass \(type(of: self))")
+        return Data()
     }
     
     var encode: Data {

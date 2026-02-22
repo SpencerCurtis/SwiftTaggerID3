@@ -124,7 +124,9 @@ class LocalizedFrame: Frame {
         switch self.identifier {
             case .comments, .unsynchronizedLyrics: return self.identifier.frameKey(language: self.language, description: self.descriptionString)
             case .userDefinedText, .userDefinedWebpage: return self.identifier.frameKey(self.descriptionString)
-            default: fatalError("Invalid frame key for localizedFrame \(self.identifier)")
+            default:
+                assertionFailure("Invalid frame key for localizedFrame \(self.identifier)")
+                return .passThrough(idString: self.identifier.rawValue, uuid: UUID())
         }
     }
     

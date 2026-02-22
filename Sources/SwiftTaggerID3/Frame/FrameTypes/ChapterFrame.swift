@@ -89,7 +89,8 @@ class ChapterFrame: Frame {
     
     override var contentData: Data {
         guard version != .v2_2 else {
-            fatalError("Chapter frame is not available for ID3 v2.2")
+            assertionFailure("Chapter frame is not available for ID3 v2.2")
+            return Data()
         }
         var data = Data()
         // there is no encoding byte for Chapter frames
@@ -135,7 +136,9 @@ class ChapterFrame: Frame {
         let flags = version.defaultFlags
         
         guard version != .v2_2 else {
-            fatalError("Chapter frame is not available for ID3 v2.2")
+            assertionFailure("Chapter frame is not available for ID3 v2.2")
+            super.init(identifier: identifier, version: version, size: 0, flags: flags)
+            return
         }
 
         var size = 16 // 16 = start/end times (8) + start/end offsets (8)

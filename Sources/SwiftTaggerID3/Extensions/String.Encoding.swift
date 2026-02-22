@@ -47,15 +47,19 @@ extension String.Encoding {
         switch self.terminationCount {
             case 1: return Data([0x00])
             case 2: return Data(repeating: 0x00, count: 2)
-            default: fatalError("Null terminator not set for string type")
+            default:
+                assertionFailure("Null terminator not set for string type \(self)")
+                return Data([0x00])
         }
     }
-    
+
     var terminationCount: Int {
         switch self {
             case .ascii, .utf8, .isoLatin1: return 1
             case .utf16, .utf16BigEndian: return 2
-            default: fatalError("Null terminator not set for string type")
+            default:
+                assertionFailure("Null terminator not set for string type \(self)")
+                return 1
         }
     }
 }

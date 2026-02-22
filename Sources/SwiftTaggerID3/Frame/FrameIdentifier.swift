@@ -117,40 +117,50 @@ enum FrameIdentifier: String, CaseIterable {
     func frameKey(startTime: Int) -> FrameKey {
         switch self {
             case .chapter: return .chapter(startTime: startTime)
-            default: fatalError("Wrong frame key for identifier \(self.rawValue)")
+            default:
+                assertionFailure("Wrong frame key for identifier \(self.rawValue)")
+                return .passThrough(idString: self.rawValue, uuid: UUID())
         }
     }
-    
+
     func frameKey(idString: String, uuid: UUID) -> FrameKey {
         switch self {
             case .passThrough: return .passThrough(idString: idString, uuid: uuid)
-            default: fatalError("Wrong frame key for identifier \(self.rawValue)")
+            default:
+                assertionFailure("Wrong frame key for identifier \(self.rawValue)")
+                return .passThrough(idString: idString, uuid: uuid)
         }
     }
-    
+
     func frameKey(imageType: ImageType) -> FrameKey {
         switch self {
             case .attachedPicture: return .attachedPicture(imageType: imageType)
-            default: fatalError("Wrong frame key for identifier \(self.rawValue)")
+            default:
+                assertionFailure("Wrong frame key for identifier \(self.rawValue)")
+                return .passThrough(idString: self.rawValue, uuid: UUID())
         }
     }
-    
+
     func frameKey(language: ISO6392Code?, description: String?) -> FrameKey {
         let language = language ?? .und
         let description = description ?? ""
         switch self {
             case .comments: return .comments(language: language, description: description)
             case .unsynchronizedLyrics: return .unsynchronizedLyrics(language: language, description: description)
-            default: fatalError("Wrong frame key for identifier \(self.rawValue)")
+            default:
+                assertionFailure("Wrong frame key for identifier \(self.rawValue)")
+                return .passThrough(idString: self.rawValue, uuid: UUID())
         }
     }
-    
+
     func frameKey(_ description: String?) -> FrameKey {
         let description = description ?? ""
         switch self {
             case .userDefinedText: return .userDefinedText(description)
             case .userDefinedWebpage: return .userDefinedWebpage(description)
-            default: fatalError("Wrong frame key for identifier \(self.rawValue)")
+            default:
+                assertionFailure("Wrong frame key for identifier \(self.rawValue)")
+                return .passThrough(idString: self.rawValue, uuid: UUID())
         }
     }
 
@@ -158,7 +168,9 @@ enum FrameIdentifier: String, CaseIterable {
         let email = email ?? ""
         switch self {
             case .popularimeter: return .popularimeter(email: email)
-            default: fatalError("Wrong frame key for identifier \(self.rawValue)")
+            default:
+                assertionFailure("Wrong frame key for identifier \(self.rawValue)")
+                return .passThrough(idString: self.rawValue, uuid: UUID())
         }
     }
     
@@ -233,7 +245,9 @@ enum FrameIdentifier: String, CaseIterable {
             case .trackNumber: return .trackNumber
             case .year: return .year
             case .popularimeter: return .popularimeter(email: "")
-            default: fatalError("Wrong frame key for identifier \(self.rawValue)")
+            default:
+                assertionFailure("Wrong frame key for identifier \(self.rawValue)")
+                return .passThrough(idString: self.rawValue, uuid: UUID())
         }
     }
     
