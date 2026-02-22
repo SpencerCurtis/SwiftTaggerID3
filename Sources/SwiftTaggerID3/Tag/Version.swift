@@ -21,7 +21,7 @@ public enum Version: UInt8, CaseIterable {
     /// Initialize ID3 version from the data representatoin of the version bytes
     init(data: Data) throws {
         guard data.count == 5 else {
-            fatalError(Mp3FileError.InvalidVersionData.localizedDescription)
+            throw Mp3FileError.InvalidVersionData
         }
         let fourthByte = UInt8(data[data.index(data.startIndex, offsetBy: 3)])
         guard fourthByte == 0x02 ||

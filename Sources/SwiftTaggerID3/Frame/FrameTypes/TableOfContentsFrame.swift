@@ -95,19 +95,21 @@ class TableOfContentsFrame: Frame {
     
     override var contentData: Data {
         guard version != .v2_2 else {
-            fatalError("TableOfContents frame is not available for ID3 v2.2")
+            assertionFailure("TableOfContents frame is not available for ID3 v2.2")
+            return Data()
         }
         var data = Data()
         // there is no encoding byte for TOC frames
         // encode and append the elementID, adding a null terminator
         data.append("TOC".attemptTerminatedStringEncoding(.isoLatin1))
         data.append(encodedFlagByte)
-        
+
         // encode and append the entry count
         let entryCount = self.childElementIDs.count
         // a valid TOC frame needs at least 1 child element
         guard entryCount > 0 else {
-            fatalError("A valid TableOfContents frame requires at least one entry")
+            assertionFailure("A valid TableOfContents frame requires at least one entry")
+            return Data()
         }
         let entryCountUInt8 = UInt8(entryCount)
         data.append(entryCountUInt8)
