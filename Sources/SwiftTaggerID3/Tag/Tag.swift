@@ -53,7 +53,9 @@ public struct Tag {
 
         // at this point the remainder should be all the frames data, without the 10-byte tag header
         // set range of frames data using tag size as the upper bound
-        let tagDataRange = remainder.startIndex ..< remainder.startIndex + size
+        // clamp to available data to prevent crash on truncated/corrupted files
+        let tagDataEnd = min(remainder.startIndex + size, remainder.endIndex)
+        let tagDataRange = remainder.startIndex ..< tagDataEnd
         remainder = remainder[tagDataRange]
 
         // parse frames from the remaining tag data
