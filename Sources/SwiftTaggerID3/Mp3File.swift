@@ -59,8 +59,10 @@ public struct Mp3File {
         var data = self.data
         let oldTag = try self.tag()
         let oldTagSize = oldTag.size
-        let tagDataRange = data.startIndex ..< oldTagSize + 10
-        
+        // Clamp to available data to prevent crash on truncated/corrupted files (Fixes PODCENTER-3J)
+        let tagDataEnd = min(data.startIndex + oldTagSize + 10, data.endIndex)
+        let tagDataRange = data.startIndex ..< tagDataEnd
+
         let tagData = try tag.tagWithHeader(version: version)
         data.replaceSubrange(tagDataRange, with: tagData)
         return data
