@@ -59,18 +59,21 @@ class ImageFrame: Frame {
          payload: Data) throws {
 
         var data = payload
-        
+
         let encoding = try data.extractEncoding()
 
         var imageFormat: ImageFormat? = nil
+        var parsedMimeType: String?
         switch version {
             // get MIME or format-type string to determine format
             case .v2_3, .v2_4 :
                 if let formatString = data.extractNullTerminatedString(encoding) {
+                    parsedMimeType = formatString
                     imageFormat = ImageFormat(nil, formatString, version: version)
                 }
             case .v2_2:
                 if let formatString = String(bytes: data.extractFirst(3), encoding: encoding) {
+                    parsedMimeType = formatString
                     if let format = ImageFormat(nil, formatString, version: version) {
                         imageFormat = format
                     } else {
@@ -78,7 +81,7 @@ class ImageFrame: Frame {
                     }
                 }
         }
-        
+
         let pictureTypeByte = data.extractFirst(1)
         self.imageType = ImageType(rawValue: pictureTypeByte.uInt8BE) ?? .other
         // parse out the image description string
@@ -89,16 +92,32 @@ class ImageFrame: Frame {
             case .v2_3, .v2_4:
                 self.descriptionString = data.extractNullTerminatedString(encoding)
         }
-        
+
         if let format = imageFormat {
             self.imageFormat = format
         } else {
+            let diagnostics = ImageFrameDiagnostics(
+                version: "\(version)",
+                declaredSize: size,
+                payloadSize: payload.count,
+                payloadHeadHex: payload.prefix(32).map { String(format: "%02x", $0) }.joined(separator: " "),
+                mimeTypeString: parsedMimeType,
+                remainingDataSize: data.count,
+                remainingHeadHex: data.prefix(16).map { String(format: "%02x", $0) }.joined(separator: " "),
+                failureReason: data.count < 4
+                    ? "insufficient data for magic number (\(data.count) bytes remaining)"
+                    : "unrecognized magic bytes"
+            )
+
+            guard data.count >= 4 else {
+                throw FrameError.imageFrameParseError(diagnostics)
+            }
             let range = data.startIndex ..< data.index(data.startIndex, offsetBy: 4)
             let firstFourBytes = data[range]
             if let format = ImageFormat(firstFourBytes) {
                 self.imageFormat = format
             } else {
-                throw FrameError.UnhandledImageFormat
+                throw FrameError.imageFrameParseError(diagnostics)
             }
         }
         
@@ -269,6 +288,9 @@ extension Tag {
         let data = try Data(contentsOf: imageLocation)
         
         let imageFormat: ImageFormat
+        guard data.count >= 4 else {
+            throw FrameError.UnhandledImageFormat
+        }
         let range = data.startIndex ..< data.index(data.startIndex, offsetBy: 4)
         // magic numbers are more reliable than extension
         let firstFourBytes = data[range]

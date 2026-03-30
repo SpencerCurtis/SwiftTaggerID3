@@ -106,10 +106,33 @@ public class Frame: CustomStringConvertible {
     }
 }
 
-enum FrameError: Error {
+public enum FrameError: Error {
     case UnableToDecodeStringData
     case InvalidDateString
     case InvalidIdentifierString(String)
     case UnhandledImageFormat
     case InvalidImageData
+    case imageFrameParseError(ImageFrameDiagnostics)
+}
+
+/// Diagnostic context captured when an APIC/PIC image frame fails to parse.
+/// Carried as an associated value on `FrameError.imageFrameParseError` so
+/// callers can forward the raw details to crash reporting.
+public struct ImageFrameDiagnostics: Sendable {
+    /// ID3 tag version (v2.2, v2.3, v2.4)
+    public let version: String
+    /// Frame size as declared in the ID3 header
+    public let declaredSize: Int
+    /// Original payload size in bytes
+    public let payloadSize: Int
+    /// Hex dump of the first 32 bytes of the payload
+    public let payloadHeadHex: String
+    /// MIME type string extracted from the frame (nil if extraction failed)
+    public let mimeTypeString: String?
+    /// Bytes remaining after extracting encoding + MIME + picture type + description
+    public let remainingDataSize: Int
+    /// Hex dump of the first 16 bytes of remaining data (the magic number region)
+    public let remainingHeadHex: String
+    /// Which stage of parsing failed
+    public let failureReason: String
 }
